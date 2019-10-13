@@ -25,6 +25,9 @@ func main() {
 		printError(result)
 	case info:
 		printInfo(result)
+	case start:
+		configHTTPServer(result)
+		startHTTPServer(result)
 	default:
 		printError(result)
 	}
