@@ -14,12 +14,17 @@ URL Search is distributed in the hope that it will be useful, but WITHOUT ANY WA
 
 ## Usage
 
-	urlsearch INFO
+	urlsearch (INFO | {SERVER-PARAM})
 
 	INFO
 		-h           print this help
 		-v           print version
 		--copyright  print copyright
+
+	SERVER-PARAM
+		-p=N         port number (N is an integer)
+		-t=S         page title (S is a string)
+		-d=S         working directory (S is a string)
 
 ## References
 

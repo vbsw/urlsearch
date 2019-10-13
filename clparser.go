@@ -75,14 +75,15 @@ func interpretOneParameter(result *parseResult, parameters *clParameters) {
 		result.command = info
 		result.message = "fsplit splits files into many, or combines them back to one\n\n"
 		result.message = result.message + "USAGE\n"
-		result.message = result.message + "  ursearch (INFO | {SERVER-PARAM}\n\n"
+		result.message = result.message + "  ursearch (INFO | {SERVER-PARAM})\n\n"
 		result.message = result.message + "INFO\n"
 		result.message = result.message + "  -h           print this help\n"
 		result.message = result.message + "  -v           print version\n"
 		result.message = result.message + "  --copyright  print copyright\n\n"
 		result.message = result.message + "SERVER-PARAM\n"
 		result.message = result.message + "  -p=N         port number (N is an integer)\n"
-		result.message = result.message + "  -t=S         page title (S is a string)\n\n"
+		result.message = result.message + "  -t=S         page title (S is a string)\n"
+		result.message = result.message + "  -d=S         working directory (S is a string)\n\n"
 
 	} else if len(parameters.version) > 0 {
 		result.command = info
