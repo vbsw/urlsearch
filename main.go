@@ -17,25 +17,23 @@ var version semver.Version
 
 func main() {
 	version = semver.New(0, 1, 0)
-	cmd := newCmdParser()
+	result := parseOSArgs()
 
-	cmd.parseOSArgs()
-
-	switch cmd.cmdType {
+	switch result.command {
 	case none:
-		cmd.message = "unknown state"
-		printError(cmd)
+		result.message = "unknown state"
+		printError(result)
 	case info:
-		printInfo(cmd)
+		printInfo(result)
 	default:
-		printError(cmd)
+		printError(result)
 	}
 }
 
-func printInfo(cmd *cmdParser) {
-	fmt.Println(cmd.message)
+func printInfo(result *parseResult) {
+	fmt.Println(result.message)
 }
 
-func printError(cmd *cmdParser) {
-	fmt.Println("error:", cmd.message)
+func printError(result *parseResult) {
+	fmt.Println("error:", result.message)
 }
