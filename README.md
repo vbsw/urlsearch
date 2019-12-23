@@ -26,6 +26,13 @@ URL Search is distributed in the hope that it will be useful, but WITHOUT ANY WA
 		-t=S         page title (S is a string)
 		-d=S         working directory (S is a string)
 
+## Run on Windows
+To run program without Cmd create file "start.vbs" with following lines:
+
+	Set WshShell = CreateObject("WScript.Shell") 
+	WshShell.Run """<path>\urlsearch.exe"" ""-tMy Title"" ""-p8080""", 0
+	Set WshShell = Nothing
+
 ## References
 
 - https://golang.org/doc/install
