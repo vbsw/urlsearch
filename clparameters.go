@@ -18,6 +18,7 @@ type clParameters struct {
 	port      []osargs.Param
 	title     []osargs.Param
 	dir       []osargs.Param
+	daemon    []osargs.Param
 }
 
 func (parameters *clParameters) infoAvailable() bool {
@@ -34,12 +35,13 @@ func (parameters *clParameters) anyParameterMultiple() bool {
 }
 
 func (parameters *clParameters) toArray() [][]osargs.Param {
-	parametersArray := make([][]osargs.Param, 6)
+	parametersArray := make([][]osargs.Param, 7)
 	parametersArray[0] = parameters.help
 	parametersArray[1] = parameters.version
 	parametersArray[2] = parameters.copyright
 	parametersArray[3] = parameters.port
 	parametersArray[4] = parameters.title
 	parametersArray[5] = parameters.dir
+	parametersArray[6] = parameters.daemon
 	return parametersArray
 }

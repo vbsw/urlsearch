@@ -10,7 +10,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/vbsw/remove"
 	"github.com/vbsw/semver"
+	"os"
+	"os/exec"
 )
 
 var version semver.Version
@@ -25,6 +28,8 @@ func main() {
 		printError(result)
 	case info:
 		printInfo(result)
+	case daemon:
+		startDeamon()
 	case start:
 		configHTTPServer(result)
 		startHTTPServer(result)
@@ -39,4 +44,32 @@ func printInfo(result *parseResult) {
 
 func printError(result *parseResult) {
 	fmt.Println("error:", result.message)
+}
+
+func startDeamon() {
+	args := removeElement(os.Args[1:], "--daemon")
+	prog := os.Args[0]
+	for _, arg := range os.Args {
+		println(arg)
+	}
+	println("-----")
+	println(prog)
+	for _, arg := range args {
+		println(arg)
+	}
+	osCmd := exec.Command(prog, args...)
+	err := osCmd.Start()
+	println(err.Error())
+	os.Exit(0)
+}
+
+func removeElement(list []string, element string) []string {
+	listWOElement := list
+	for i, arg := range list {
+		if arg == element {
+			listWOElement = remove.String(list, i)
+			break
+		}
+	}
+	return listWOElement
 }

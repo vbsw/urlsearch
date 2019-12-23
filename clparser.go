@@ -20,15 +20,17 @@ type parseResult struct {
 	port    int
 	title   string
 	dir     string
+	daemon  bool
 }
 
 type executionCommand int
 
 const (
-	none  executionCommand = 0
-	info  executionCommand = 1
-	start executionCommand = 2
-	wrong executionCommand = 3
+	none  executionCommand = iota
+	info
+	daemon
+	start
+	wrong
 )
 
 func newParseResult() *parseResult {
@@ -65,9 +67,13 @@ func parseOSArgs() *parseResult {
 }
 
 func interpretZeroArguments(result *parseResult) {
-	result.command = start
 	result.port = defaultPort
 	result.title = defaultTitle
+	createDefaultWorkingDirectory(result)
+
+	if result.command == none {
+		result.command = start
+	}
 }
 
 func interpretOneParameter(result *parseResult, parameters *clParameters) {
@@ -83,7 +89,7 @@ func interpretOneParameter(result *parseResult, parameters *clParameters) {
 		result.message = result.message + "SERVER-PARAM\n"
 		result.message = result.message + "  -p=N         port number (N is an integer)\n"
 		result.message = result.message + "  -t=S         page title (S is a string)\n"
-		result.message = result.message + "  -d=S         working directory (S is a string)\n\n"
+		result.message = result.message + "  -d=S         working directory (S is a string)"
 
 	} else if len(parameters.version) > 0 {
 		result.command = info
@@ -94,18 +100,17 @@ func interpretOneParameter(result *parseResult, parameters *clParameters) {
 		result.message = "Copyright 2019, Vitali Baumtrok (vbsw@mailbox.org).\n"
 		result.message = result.message + "Distributed under the Boost Software License, version 1.0."
 
-	} else if len(parameters.port) > 0 {
-		interpretPath(result, parameters)
+	} else if len(parameters.daemon) > 0 {
+		result.command = daemon
+
+	} else {
+		interpretWorkingDir(result, parameters)
 		interpretPort(result, parameters)
 		interpretTitle(result, parameters)
 
 		if result.command == none {
 			result.command = start
 		}
-
-	} else {
-		result.command = wrong
-		result.message = "unknown state (1)"
 	}
 }
 
@@ -117,12 +122,16 @@ func interpretManyParameters(result *parseResult, parameters *clParameters) {
 		setWrongArgumentUsage(result)
 
 	} else {
-		interpretPath(result, parameters)
+		interpretWorkingDir(result, parameters)
 		interpretPort(result, parameters)
 		interpretTitle(result, parameters)
 
 		if result.command == none {
-			result.command = start
+			if len(parameters.daemon) > 0 {
+				result.command = daemon
+			} else {
+				result.command = start
+			}
 		}
 	}
 }
@@ -139,6 +148,8 @@ func parseParameters(osArgs *osargs.OSArgs) *clParameters {
 	parameters.help = osArgs.Parse("-h", "--help", "-help", "help")
 	parameters.version = osArgs.Parse("-v", "--version", "-version", "version")
 	parameters.copyright = osArgs.Parse("--copyright", "-copyright", "copyright")
+	parameters.daemon = osArgs.Parse("--daemon")
+
 	parameters.port = osArgs.ParsePairs(operator, "-p", "--port", "-port", "port")
 	parameters.title = osArgs.ParsePairs(operator, "-t", "--title", "-title", "title")
 	parameters.dir = osArgs.ParsePairs(operator, "-d", "--dir", "-dir", "dir")
@@ -146,7 +157,7 @@ func parseParameters(osArgs *osargs.OSArgs) *clParameters {
 	return parameters
 }
 
-func interpretPath(result *parseResult, parameters *clParameters) {
+func interpretWorkingDir(result *parseResult, parameters *clParameters) {
 	if result.command == none {
 		if len(parameters.dir) > 0 {
 			dir := parameters.dir[0].Value
@@ -155,7 +166,7 @@ func interpretPath(result *parseResult, parameters *clParameters) {
 				result.dir = dir
 
 			} else {
-				interpretPathError(result, dir)
+				interpretWorkingDirError(result, dir)
 			}
 
 		} else {
@@ -194,7 +205,7 @@ func createDefaultWorkingDirectory(result *parseResult) {
 			}
 
 		} else {
-			interpretPathError(result, dir)
+			interpretWorkingDirError(result, dir)
 		}
 
 	} else {
@@ -227,7 +238,7 @@ func unifySlashes(path string) string {
 	return string(pathBytes)
 }
 
-func interpretPathError(result *parseResult, dir string) {
+func interpretWorkingDirError(result *parseResult, dir string) {
 	if fileExists(dir) {
 		result.command = wrong
 		result.message = "working directory is not a directory \"" + dir + "\""
