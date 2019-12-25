@@ -15,20 +15,20 @@ import (
 )
 
 type parseResult struct {
-	command executionCommand
-	message string
-	port    int
-	title   string
-	dir     string
-	daemon  bool
+	command    executionCommand
+	message    string
+	port       int
+	title      string
+	dir        string
+	background bool
 }
 
 type executionCommand int
 
 const (
-	none  executionCommand = iota
+	none executionCommand = iota
 	info
-	daemon
+	background
 	start
 	wrong
 )
@@ -100,8 +100,8 @@ func interpretOneParameter(result *parseResult, parameters *clParameters) {
 		result.message = "Copyright 2019, Vitali Baumtrok (vbsw@mailbox.org).\n"
 		result.message = result.message + "Distributed under the Boost Software License, version 1.0."
 
-	} else if len(parameters.daemon) > 0 {
-		result.command = daemon
+	} else if len(parameters.background) > 0 {
+		result.command = background
 
 	} else {
 		interpretWorkingDir(result, parameters)
@@ -127,8 +127,8 @@ func interpretManyParameters(result *parseResult, parameters *clParameters) {
 		interpretTitle(result, parameters)
 
 		if result.command == none {
-			if len(parameters.daemon) > 0 {
-				result.command = daemon
+			if len(parameters.background) > 0 {
+				result.command = background
 			} else {
 				result.command = start
 			}
@@ -148,7 +148,7 @@ func parseParameters(osArgs *osargs.OSArgs) *clParameters {
 	parameters.help = osArgs.Parse("-h", "--help", "-help", "help")
 	parameters.version = osArgs.Parse("-v", "--version", "-version", "version")
 	parameters.copyright = osArgs.Parse("--copyright", "-copyright", "copyright")
-	parameters.daemon = osArgs.Parse("--daemon")
+	parameters.background = osArgs.Parse("-b", "--background", "-background", "background")
 
 	parameters.port = osArgs.ParsePairs(operator, "-p", "--port", "-port", "port")
 	parameters.title = osArgs.ParsePairs(operator, "-t", "--title", "-title", "title")

@@ -12,13 +12,13 @@ import (
 )
 
 type clParameters struct {
-	help      []osargs.Param
-	version   []osargs.Param
-	copyright []osargs.Param
-	port      []osargs.Param
-	title     []osargs.Param
-	dir       []osargs.Param
-	daemon    []osargs.Param
+	help       []osargs.Param
+	version    []osargs.Param
+	copyright  []osargs.Param
+	port       []osargs.Param
+	title      []osargs.Param
+	dir        []osargs.Param
+	background []osargs.Param
 }
 
 func (parameters *clParameters) infoAvailable() bool {
@@ -42,6 +42,6 @@ func (parameters *clParameters) toArray() [][]osargs.Param {
 	parametersArray[3] = parameters.port
 	parametersArray[4] = parameters.title
 	parametersArray[5] = parameters.dir
-	parametersArray[6] = parameters.daemon
+	parametersArray[6] = parameters.background
 	return parametersArray
 }

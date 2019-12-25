@@ -10,10 +10,13 @@ package main
 
 import (
 	"fmt"
+	"github.com/vbsw/contains"
 	"github.com/vbsw/remove"
 	"github.com/vbsw/semver"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"runtime"
 )
 
 var version semver.Version
@@ -28,8 +31,8 @@ func main() {
 		printError(result)
 	case info:
 		printInfo(result)
-	case daemon:
-		startDeamon()
+	case background:
+		startInBackground()
 	case start:
 		configHTTPServer(result)
 		startHTTPServer(result)
@@ -46,30 +49,51 @@ func printError(result *parseResult) {
 	fmt.Println("error:", result.message)
 }
 
-func startDeamon() {
-	args := removeElement(os.Args[1:], "--daemon")
-	prog := os.Args[0]
-	for _, arg := range os.Args {
-		println(arg)
+func startInBackground() {
+	if runtime.GOOS == "windows" {
+		startInBackgroundWindows()
+	} else {
+		startInBackgroundDefault()
 	}
-	println("-----")
-	println(prog)
-	for _, arg := range args {
-		println(arg)
-	}
-	osCmd := exec.Command(prog, args...)
-	err := osCmd.Start()
-	println(err.Error())
-	os.Exit(0)
 }
 
-func removeElement(list []string, element string) []string {
+func removeElements(list []string, elements ...string) []string {
 	listWOElement := list
 	for i, arg := range list {
-		if arg == element {
+		if contains.String(elements, arg) {
 			listWOElement = remove.String(list, i)
 			break
 		}
 	}
 	return listWOElement
+}
+
+func startInBackgroundWindows() {
+}
+
+func startInBackgroundDefault() {
+	progPathAbs, errPathAbs := filepath.Abs(os.Args[0])
+
+	if errPathAbs == nil {
+		args := removeElements(os.Args[1:], "-b", "--background", "-background", "background")
+		params := make([]string, 0, 6+len(args))
+		dir := filepath.Dir(progPathAbs)
+		prog := filepath.Base(progPathAbs)
+		params = append(params, "--start")
+		params = append(params, "--background")
+		params = append(params, "--chdir")
+		params = append(params, dir)
+		params = append(params, "--exec")
+		params = append(params, prog)
+		params = append(params, args...)
+		/* I couldn't get syscall.ForkExec() to work :( */
+		osCmd := exec.Command("start-stop-daemon", params...)
+		errCmd := osCmd.Start()
+
+		if errCmd != nil {
+			println(errCmd.Error())
+		}
+	} else {
+		fmt.Println(errPathAbs.Error())
+	}
 }
