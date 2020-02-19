@@ -47,13 +47,16 @@ func main() {
 }
 
 func cleanUpWorkingDir(cmd *command) {
-	path := filepath.Join(cmd.workingDir, vbScriptName)
-	fileInfo, err := os.Stat(path)
-	fileExists := (err == nil || !os.IsNotExist(err)) && fileInfo != nil && !fileInfo.IsDir()
+	vbSriptPath := filepath.Join(cmd.workingDir, vbScriptName)
 
-	if fileExists {
-		os.Remove(path)
+	if fileExists(vbSriptPath) {
+		os.Remove(vbSriptPath)
 	}
+}
+
+func fileExists(path string) bool {
+	fileInfo, err := os.Stat(path)
+	return (err == nil || !os.IsNotExist(err)) && fileInfo != nil && !fileInfo.IsDir()
 }
 
 func (msg *messageGenerator) ShortInfo() string {

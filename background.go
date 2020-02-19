@@ -33,6 +33,7 @@ func startInBackgroundWindows(cmd *command) error {
 	scriptPath, err := createVBSkript(cmd)
 
 	if err == nil {
+		// script will be deleted on start of the other instance
 		osCmd := exec.Command("wscript", scriptPath)
 		err = osCmd.Start()
 	}
@@ -63,15 +64,6 @@ func startInBackgroundOther(cmd *command) error {
 	return err
 }
 
-func argsWOBackgroundFlag(cmd *command) []string {
-	args := make([]string, 4)
-	args[0] = cmd.programCall
-	args[1] = "--port=" + cmd.port
-	args[2] = "--title=" + cmd.title
-	args[3] = "--dir=" + cmd.workingDir
-	return args
-}
-
 func createVBSkript(cmd *command) (string, error) {
 	script := "Set WshShell = CreateObject(\"WScript.Shell\")\r\n"
 	script += "WshShell.Run \"\"\"" + cmd.programCall + "\"\" \"\"--port=" + cmd.port + "\"\" \"\"--title=" + cmd.title + "\"\" \"\"--dir=" + cmd.workingDir + "\"\"\", 0\r\n"
@@ -86,4 +78,13 @@ func createVBSkript(cmd *command) (string, error) {
 	}
 
 	return skriptPath, err
+}
+
+func argsWOBackgroundFlag(cmd *command) []string {
+	args := make([]string, 4)
+	args[0] = cmd.programCall
+	args[1] = "--port=" + cmd.port
+	args[2] = "--title=" + cmd.title
+	args[3] = "--dir=" + cmd.workingDir
+	return args
 }
