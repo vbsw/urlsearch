@@ -1,99 +1,87 @@
 /*
- *          Copyright 2019, Vitali Baumtrok.
+ *          Copyright 2020, Vitali Baumtrok.
  * Distributed under the Boost Software License, Version 1.0.
  *     (See accompanying file LICENSE or copy at
  *        http://www.boost.org/LICENSE_1_0.txt)
  */
 
-// Package fsplit is compiled to an executable. It splits one file into many or concatenates them back to one.
+// Package urlsearch is compiled to an executable. It is a server to save and search URLs by keywords.
 package main
 
 import (
 	"fmt"
-	"github.com/vbsw/contains"
-	"github.com/vbsw/remove"
-	"github.com/vbsw/semver"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"runtime"
 )
 
-var version semver.Version
+const (
+	vbScriptName = "urlsearch.start.vbs"
+)
+
+type messageGenerator struct {
+}
 
 func main() {
-	version = semver.New(0, 1, 0)
-	result := parseOSArgs()
+	msgGen := new(messageGenerator)
+	cmd, err := commandFromOSArgs(msgGen)
 
-	switch result.command {
-	case none:
-		result.message = "unknown state"
-		printError(result)
-	case info:
-		printInfo(result)
-	case background:
-		startInBackground()
-	case start:
-		configHTTPServer(result)
-		startHTTPServer(result)
-	default:
-		printError(result)
-	}
-}
+	if err == nil {
+		cleanUpWorkingDir(cmd)
 
-func printInfo(result *parseResult) {
-	fmt.Println(result.message)
-}
+		if cmd.Info {
+			fmt.Println(cmd.InfoMessage)
 
-func printError(result *parseResult) {
-	fmt.Println("error:", result.message)
-}
+		} else if cmd.background {
+			err = startHTTPServerInBackground(cmd)
 
-func startInBackground() {
-	if runtime.GOOS == "windows" {
-		startInBackgroundWindows()
-	} else {
-		startInBackgroundDefault()
-	}
-}
+		} else {
 
-func removeElements(list []string, elements ...string) []string {
-	listWOElement := list
-	for i, arg := range list {
-		if contains.String(elements, arg) {
-			listWOElement = remove.String(list, i)
-			break
+			if err == nil {
+				startHTTPServer(cmd.port, cmd.title, cmd.workingDir)
+			}
 		}
 	}
-	return listWOElement
-}
-
-func startInBackgroundWindows() {
-}
-
-func startInBackgroundDefault() {
-	progPathAbs, errPathAbs := filepath.Abs(os.Args[0])
-
-	if errPathAbs == nil {
-		args := removeElements(os.Args[1:], "-b", "--background", "-background", "background")
-		params := make([]string, 0, 6+len(args))
-		dir := filepath.Dir(progPathAbs)
-		prog := filepath.Base(progPathAbs)
-		params = append(params, "--start")
-		params = append(params, "--background")
-		params = append(params, "--chdir")
-		params = append(params, dir)
-		params = append(params, "--exec")
-		params = append(params, prog)
-		params = append(params, args...)
-		/* I couldn't get syscall.ForkExec() to work :( */
-		osCmd := exec.Command("start-stop-daemon", params...)
-		errCmd := osCmd.Start()
-
-		if errCmd != nil {
-			println(errCmd.Error())
-		}
-	} else {
-		fmt.Println(errPathAbs.Error())
+	if err != nil {
+		fmt.Println("error:", err.Error())
 	}
+}
+
+func cleanUpWorkingDir(cmd *command) {
+	path := filepath.Join(cmd.workingDir, vbScriptName)
+	fileInfo, err := os.Stat(path)
+	fileExists := (err == nil || !os.IsNotExist(err)) && fileInfo != nil && !fileInfo.IsDir()
+
+	if fileExists {
+		os.Remove(path)
+	}
+}
+
+func (msg *messageGenerator) ShortInfo() string {
+	return "Run \"urlsearch --help\" for usage."
+}
+
+func (msg *messageGenerator) Help() string {
+	message := "URL Search is a server to save and search URLs by keywords.\n\n"
+	message += "USAGE\n"
+	message += "  urlsearch (INFO | {SERVER-PARAM})\n\n"
+	message += "INFO\n"
+	message += "  -h, --help         print this help\n"
+	message += "  -v, --version      print version\n"
+	message += "  --copyright        print copyright\n\n"
+	message += "SERVER-PARAM\n"
+	message += "  -p=N, --port=N     port number (N: integer)\n"
+	message += "  -t=S, --title=S    page title (S: string)\n"
+	message += "  -d=S, --dir=S      working directory (S: string)\n"
+	message += "  -b, --background   run in background"
+	return message
+}
+
+func (msg *messageGenerator) Version() string {
+	return "0.1.0"
+}
+
+func (msg *messageGenerator) Copyright() string {
+	message := "Copyright 2020, Vitali Baumtrok (vbsw@mailbox.org).\n"
+	message += "Distributed under the Boost Software License, Version 1.0."
+	return message
 }

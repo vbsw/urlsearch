@@ -10,32 +10,22 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 )
 
-const (
-	defaultPort  = 8080
-	defaultTitle = "URL Search"
-)
-
 var (
-	serverPort int
-	pageTitle  string
-	workingDir string
+	serverPort   string
+	websiteTitle string
+	workingDir   string
 )
 
-func configHTTPServer(result *parseResult) {
-	serverPort = result.port
-	pageTitle = result.title
-	workingDir = result.dir
-}
-
-func startHTTPServer(result *parseResult) {
-	portStr := strconv.Itoa(serverPort)
+func startHTTPServer(port, title, wrkDir string) {
+	serverPort = port
+	websiteTitle = title
+	workingDir = wrkDir
 
 	http.HandleFunc("/", handler)
-	http.ListenAndServe(":"+portStr, nil)
+	http.ListenAndServe(":"+serverPort, nil)
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -49,10 +39,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "\t<meta name=\"author\" content=\"Vitali Baumtrok\">")
 	fmt.Fprintln(w, "\t<meta name=\"date\" content=\""+dateStr+"\">")
 	fmt.Fprintln(w, "\t<meta name=\"viewport\" content=\"width=device-width\">")
-	fmt.Fprintln(w, "\t<title>"+pageTitle+"</title>")
+	fmt.Fprintln(w, "\t<title>"+websiteTitle+"</title>")
 	fmt.Fprintln(w, "</head>")
 	fmt.Fprintln(w, "<body>")
-	fmt.Fprintln(w, "\t<h1>"+pageTitle+"</h1>")
+	fmt.Fprintln(w, "\t<h1>"+websiteTitle+"</h1>")
 	fmt.Fprintln(w, "\t<p>working directory:<br>"+workingDir+"</p>")
 	fmt.Fprintln(w, "</body>")
 	fmt.Fprintln(w, "</html>")

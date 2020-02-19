@@ -6,7 +6,7 @@
 URL Search is a server to save and search URLs by keywords. URL Search is published on <https://github.com/vbsw/urlsearch>.
 
 ## Copyright
-Copyright 2019, Vitali Baumtrok (vbsw@mailbox.org).
+Copyright 2020, Vitali Baumtrok (vbsw@mailbox.org).
 
 URL Search is distributed under the Boost Software License, version 1.0. (See accompanying file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
@@ -17,21 +17,15 @@ URL Search is distributed in the hope that it will be useful, but WITHOUT ANY WA
 	urlsearch (INFO | {SERVER-PARAM})
 
 	INFO
-		-h           print this help
-		-v           print version
-		--copyright  print copyright
+		-h, --help         print this help
+		-v, --version      print version
+		--copyright        print copyright
 
 	SERVER-PARAM
-		-p=N         port number (N is an integer)
-		-t=S         page title (S is a string)
-		-d=S         working directory (S is a string)
-
-## Run on Windows
-To run program without Cmd create file "start.vbs" with following lines:
-
-	Set WshShell = CreateObject("WScript.Shell") 
-	WshShell.Run """<path>\urlsearch.exe"" ""-tMy Title"" ""-p8080""", 0
-	Set WshShell = Nothing
+		-p=N, --port=N     port number (N: integer)
+		-t=S, --title=S    page title (S: string)
+		-d=S, --dir=S      working directory (S: string)
+		-b, --background   run in background
 
 ## References
 
