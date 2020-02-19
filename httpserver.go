@@ -54,3 +54,10 @@ func dateString() string {
 	dateStr := t.Format("2006-01-02")
 	return dateStr
 }
+
+func dateTimeString() string {
+	t := time.Now()
+	/* https://golang.org/src/time/format.go */
+	dateStr := t.Format("2006-01-02 03:04:05")
+	return dateStr
+}

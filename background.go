@@ -69,7 +69,7 @@ func createVBSkript(cmd *command) (string, error) {
 	script += "WshShell.Run \"\"\"" + cmd.programCall + "\"\" \"\"--port=" + cmd.port + "\"\" \"\"--title=" + cmd.title + "\"\" \"\"--dir=" + cmd.workingDir + "\"\"\", 0\r\n"
 	script += "Set WshShell = Nothing\r\n"
 
-	skriptPath := filepath.Join(cmd.workingDir, vbScriptName)
+	skriptPath := filepath.Join(cmd.workingDir, vbsFileName)
 	skriptFile, err := os.OpenFile(skriptPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 
 	if err == nil {

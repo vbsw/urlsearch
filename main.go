@@ -15,7 +15,10 @@ import (
 )
 
 const (
-	vbScriptName = "urlsearch.start.vbs"
+	vbsFileName    = "urlsearch.start.vbs"
+	loggerFileName = "urlsearch.log"
+	prefFileName   = "urlsearch.pref"
+	urlsDirName    = "urls"
 )
 
 type messageGenerator struct {
@@ -26,6 +29,7 @@ func main() {
 	cmd, err := commandFromOSArgs(msgGen)
 
 	if err == nil {
+
 		cleanUpWorkingDir(cmd)
 
 		if cmd.Info {
@@ -35,8 +39,11 @@ func main() {
 			err = startHTTPServerInBackground(cmd)
 
 		} else {
+			err = initLogger(cmd.workingDir)
 
 			if err == nil {
+				initPreferences(cmd.workingDir)
+				initURLs(cmd.workingDir)
 				startHTTPServer(cmd.port, cmd.title, cmd.workingDir)
 			}
 		}
@@ -47,16 +54,21 @@ func main() {
 }
 
 func cleanUpWorkingDir(cmd *command) {
-	vbSriptPath := filepath.Join(cmd.workingDir, vbScriptName)
+	vbsFileName := filepath.Join(cmd.workingDir, vbsFileName)
 
-	if fileExists(vbSriptPath) {
-		os.Remove(vbSriptPath)
+	if fileExists(vbsFileName) {
+		os.Remove(vbsFileName)
 	}
 }
 
 func fileExists(path string) bool {
 	fileInfo, err := os.Stat(path)
 	return (err == nil || !os.IsNotExist(err)) && fileInfo != nil && !fileInfo.IsDir()
+}
+
+func directoryExists(path string) bool {
+	fileInfo, err := os.Stat(path)
+	return (err == nil || !os.IsNotExist(err)) && fileInfo != nil && fileInfo.IsDir()
 }
 
 func (msg *messageGenerator) ShortInfo() string {
