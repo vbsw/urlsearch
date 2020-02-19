@@ -12,23 +12,68 @@ import (
 	"path/filepath"
 )
 
-var (
-	prefPath string
-)
+type preferences struct {
+	logPath    string
+	prefPath   string
+	urlsPath   string
+	port       string
+	title      string
+	workingDir string
+}
 
-func initPreferences(workingDir string) {
+var pref preferences
+
+func initPreferences(cmd *command) error {
+	err := initLogPath(cmd.workingDir, logFileName)
+	err = initPrefPath(cmd.workingDir, prefFileName, err)
+	err = initURLsPath(cmd.workingDir, urlsDirName, err)
+
+	if err == nil {
+		pref.port = cmd.port
+		pref.title = cmd.title
+		pref.workingDir = cmd.workingDir
+	}
+	return err
+}
+
+func initLogPath(workingDir, fileName string) error {
 	var err error
-	prefPath = filepath.Join(workingDir, prefFileName)
+	pref.logPath = filepath.Join(workingDir, fileName)
 
-	if !fileExists(prefPath) {
+	if !fileExists(pref.logPath) {
 		var file *os.File
-		file, err = os.Create(prefPath)
+		file, err = os.Create(pref.logPath)
 
 		if err == nil {
 			file.Close()
-
-		} else {
-			logError(err.Error())
 		}
 	}
+	return err
+}
+
+func initPrefPath(workingDir, fileName string, err error) error {
+	if err == nil {
+		pref.prefPath = filepath.Join(workingDir, fileName)
+
+		if !fileExists(pref.prefPath) {
+			var file *os.File
+			file, err = os.Create(pref.prefPath)
+
+			if err == nil {
+				file.Close()
+			}
+		}
+	}
+	return err
+}
+
+func initURLsPath(workingDir, dirName string, err error) error {
+	if err == nil {
+		pref.urlsPath = filepath.Join(workingDir, dirName)
+
+		if !directoryExists(pref.urlsPath) {
+			err = os.MkdirAll(pref.urlsPath, os.ModePerm)
+		}
+	}
+	return err
 }

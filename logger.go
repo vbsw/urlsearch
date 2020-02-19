@@ -10,26 +10,9 @@ package main
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 )
 
-var (
-	loggerPath string
-)
-
-func initLogger(workingDir string) error {
-	var err error
-	loggerPath = filepath.Join(workingDir, loggerFileName)
-
-	if !fileExists(loggerPath) {
-		var file *os.File
-		file, err = os.Create(loggerPath)
-
-		if err == nil {
-			file.Close()
-		}
-	}
-	return err
+func initLogger() {
 }
 
 func logError(msg string) {
@@ -45,7 +28,7 @@ func logInfo(msg string) {
 }
 
 func logMessage(msg string) {
-	file, err := os.OpenFile(loggerPath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
+	file, err := os.OpenFile(pref.logPath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
 
 	if err == nil {
 		defer file.Close()

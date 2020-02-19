@@ -15,10 +15,10 @@ import (
 )
 
 const (
-	vbsFileName    = "urlsearch.start.vbs"
-	loggerFileName = "urlsearch.log"
-	prefFileName   = "urlsearch.pref"
-	urlsDirName    = "urls"
+	vbsFileName  = "urlsearch.start.vbs"
+	logFileName  = "urlsearch.log"
+	prefFileName = "urlsearch.pref"
+	urlsDirName  = "urls"
 )
 
 type messageGenerator struct {
@@ -29,7 +29,6 @@ func main() {
 	cmd, err := commandFromOSArgs(msgGen)
 
 	if err == nil {
-
 		cleanUpWorkingDir(cmd)
 
 		if cmd.Info {
@@ -39,12 +38,12 @@ func main() {
 			err = startHTTPServerInBackground(cmd)
 
 		} else {
-			err = initLogger(cmd.workingDir)
+			err = initPreferences(cmd)
 
 			if err == nil {
-				initPreferences(cmd.workingDir)
-				initURLs(cmd.workingDir)
-				startHTTPServer(cmd.port, cmd.title, cmd.workingDir)
+				initLogger()
+				initURLs()
+				startHTTPServer()
 			}
 		}
 	}

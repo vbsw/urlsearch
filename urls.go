@@ -7,23 +7,5 @@
 
 package main
 
-import (
-	"os"
-	"path/filepath"
-)
-
-var (
-	urlsPath string
-)
-
-func initURLs(workingDir string) {
-	urlsPath = filepath.Join(workingDir, urlsDirName)
-
-	if !directoryExists(urlsPath) {
-		err := os.MkdirAll(urlsPath, os.ModePerm)
-
-		if err != nil {
-			logError(err.Error())
-		}
-	}
+func initURLs() {
 }
