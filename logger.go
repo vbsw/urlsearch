@@ -16,15 +16,15 @@ func initLogger() {
 }
 
 func logError(msg string) {
-	logMessage(dateTimeString() + " error: " + msg + "\n")
+	logMessage(dateTimeString() + " ERROR " + msg + "\n")
 }
 
 func logWarning(msg string) {
-	logMessage(dateTimeString() + " warning: " + msg + "\n")
+	logMessage(dateTimeString() + " WARNING " + msg + "\n")
 }
 
 func logInfo(msg string) {
-	logMessage(dateTimeString() + " info: " + msg + "\n")
+	logMessage(dateTimeString() + " INFO " + msg + "\n")
 }
 
 func logMessage(msg string) {
