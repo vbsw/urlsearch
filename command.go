@@ -152,6 +152,8 @@ func workingDirectory(params *parameters) (string, error) {
 
 		if err == nil {
 			path = filepath.Join(path, "urlsearch")
+		} else {
+			err = errors.New("default working directory - " + err.Error())
 		}
 	}
 	return path, err

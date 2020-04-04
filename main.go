@@ -9,16 +9,10 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"github.com/vbsw/bgproc"
 	"os"
-	"path/filepath"
-)
-
-const (
-	vbsFileName  = "urlsearch.start.vbs"
-	logFileName  = "urlsearch.log"
-	prefFileName = "urlsearch.pref"
-	urlsDirName  = "urls"
 )
 
 type messageGenerator struct {
@@ -29,8 +23,6 @@ func main() {
 	cmd, err := commandFromOSArgs(msgGen)
 
 	if err == nil {
-		cleanUpWorkingDir(cmd)
-
 		if cmd.Info {
 			fmt.Println(cmd.InfoMessage)
 
@@ -52,12 +44,17 @@ func main() {
 	}
 }
 
-func cleanUpWorkingDir(cmd *command) {
-	vbsFileName := filepath.Join(cmd.workingDir, vbsFileName)
+func startHTTPServerInBackground(cmd *command) error {
+	proc := bgproc.New(cmd.programCall)
+	proc.AddArg("--port=" + cmd.port)
+	proc.AddArg("--title=" + cmd.title)
+	proc.AddArg("--dir=" + cmd.workingDir)
+	err := proc.Start()
 
-	if fileExists(vbsFileName) {
-		os.Remove(vbsFileName)
+	if err != nil {
+		err = errors.New("start detached process - " + err.Error())
 	}
+	return err
 }
 
 func fileExists(path string) bool {

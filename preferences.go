@@ -12,6 +12,12 @@ import (
 	"path/filepath"
 )
 
+const (
+	logFileName  = "urlsearch.log"
+	prefFileName = "urlsearch.pref"
+	urlsDirName  = "urls"
+)
+
 type preferences struct {
 	logPath    string
 	prefPath   string
