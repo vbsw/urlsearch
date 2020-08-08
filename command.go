@@ -33,58 +33,58 @@ func commandFromOSArgs(msgGen *messageGenerator) (*command, error) {
 	return cmd, err
 }
 
-func commandFromArgs(args []string, msgGen *messageGenerator) (*command, error) {
+func commandFromArgs(osArgs []string, msgGen *messageGenerator) (*command, error) {
 	var cmd *command
-	params, err := parametersFromArgs(args)
+	args, err := argumentsFromArgs(osArgs)
 
 	if err == nil {
-		if params == nil {
+		if args == nil {
 			cmd = new(command)
 			cmd.Info = true
 			cmd.InfoMessage = msgGen.ShortInfo()
 
-		} else if params.incompatibleArguments() {
+		} else if args.incompatibleArguments() {
 			err = errors.New("wrong argument usage")
 
-		} else if params.oneParamHasMultipleResults() {
+		} else if args.oneParamHasMultipleResults() {
 			err = errors.New("wrong argument usage")
 
 		} else {
 			cmd = new(command)
-			err = cmd.setValidcommand(params, msgGen)
+			err = cmd.setValidcommand(args, msgGen)
 		}
 	}
 	return cmd, err
 }
 
-func (cmd *command) setValidcommand(params *parameters, msgGen *messageGenerator) error {
+func (cmd *command) setValidcommand(args *arguments, msgGen *messageGenerator) error {
 	var err error
 
-	if len(params.help) > 0 {
+	if len(args.help) > 0 {
 		cmd.Info = true
 		cmd.InfoMessage = msgGen.Help()
 
-	} else if len(params.version) > 0 {
+	} else if len(args.version) > 0 {
 		cmd.Info = true
 		cmd.InfoMessage = msgGen.Version()
 
-	} else if len(params.copyright) > 0 {
+	} else if len(args.copyright) > 0 {
 		cmd.Info = true
 		cmd.InfoMessage = msgGen.Copyright()
 
 	} else {
-		cmd.background = len(params.background) > 0
-		err = cmd.interpretTitle(params, err)
-		err = cmd.interpretPort(params, err)
-		err = cmd.interpretWorkingDir(params, err)
+		cmd.background = len(args.background) > 0
+		err = cmd.interpretTitle(args, err)
+		err = cmd.interpretPort(args, err)
+		err = cmd.interpretWorkingDir(args, err)
 	}
 	return err
 }
 
-func (cmd *command) interpretTitle(params *parameters, err error) error {
+func (cmd *command) interpretTitle(args *arguments, err error) error {
 	if err == nil {
-		if len(params.title) > 0 {
-			cmd.title = params.title[0].Value
+		if len(args.title) > 0 {
+			cmd.title = args.title[0].Value
 		} else {
 			cmd.title = "URL Search"
 		}
@@ -92,17 +92,17 @@ func (cmd *command) interpretTitle(params *parameters, err error) error {
 	return err
 }
 
-func (cmd *command) interpretPort(params *parameters, err error) error {
+func (cmd *command) interpretPort(args *arguments, err error) error {
 	if err == nil {
-		if len(params.port) > 0 {
+		if len(args.port) > 0 {
 			var port int
-			port, err = strconv.Atoi(params.port[0].Value)
+			port, err = strconv.Atoi(args.port[0].Value)
 
 			// TODO: port checks
 			if err == nil && port > 0 {
 				cmd.port = strconv.Itoa(port)
 			} else {
-				err = errors.New("bad port number \"" + params.port[0].Value + "\"")
+				err = errors.New("bad port number \"" + args.port[0].Value + "\"")
 			}
 		} else {
 			cmd.port = "8080"
@@ -111,9 +111,9 @@ func (cmd *command) interpretPort(params *parameters, err error) error {
 	return err
 }
 
-func (cmd *command) interpretWorkingDir(params *parameters, err error) error {
+func (cmd *command) interpretWorkingDir(args *arguments, err error) error {
 	if err == nil {
-		cmd.workingDir, err = workingDirectory(params)
+		cmd.workingDir, err = workingDirectory(args)
 
 		if err == nil {
 			fileInfo, fileErr := os.Stat(cmd.workingDir)
@@ -140,12 +140,12 @@ func (cmd *command) interpretWorkingDir(params *parameters, err error) error {
 	return err
 }
 
-func workingDirectory(params *parameters) (string, error) {
+func workingDirectory(args *arguments) (string, error) {
 	var path string
 	var err error
 
-	if len(params.workingDir) > 0 {
-		path = params.workingDir[0].Value
+	if len(args.workingDir) > 0 {
+		path = args.workingDir[0].Value
 
 	} else {
 		path, err = os.UserHomeDir()
