@@ -1,5 +1,5 @@
 /*
- *          Copyright 2020, Vitali Baumtrok.
+ *        Copyright 2020, 2021 Vitali Baumtrok.
  * Distributed under the Boost Software License, Version 1.0.
  *     (See accompanying file LICENSE or copy at
  *        http://www.boost.org/LICENSE_1_0.txt)
@@ -35,56 +35,56 @@ func commandFromOSArgs(msgGen *messageGenerator) (*command, error) {
 
 func commandFromArgs(osArgs []string, msgGen *messageGenerator) (*command, error) {
 	var cmd *command
-	args, err := argumentsFromArgs(osArgs)
+	params, err := parametersFromArgs(osArgs)
 
 	if err == nil {
-		if args == nil {
+		if params == nil {
 			cmd = new(command)
 			cmd.Info = true
 			cmd.InfoMessage = msgGen.ShortInfo()
 
-		} else if args.incompatibleArguments() {
+		} else if params.incompatibleParameters() {
 			err = errors.New("wrong argument usage")
 
-		} else if args.oneParamHasMultipleResults() {
+		} else if params.oneParamHasMultipleResults() {
 			err = errors.New("wrong argument usage")
 
 		} else {
 			cmd = new(command)
-			err = cmd.setValidcommand(args, msgGen)
+			err = cmd.setValidcommand(params, msgGen)
 		}
 	}
 	return cmd, err
 }
 
-func (cmd *command) setValidcommand(args *arguments, msgGen *messageGenerator) error {
+func (cmd *command) setValidcommand(params *parameters, msgGen *messageGenerator) error {
 	var err error
 
-	if len(args.help) > 0 {
+	if params.help.Available() {
 		cmd.Info = true
 		cmd.InfoMessage = msgGen.Help()
 
-	} else if len(args.version) > 0 {
+	} else if params.version.Available() {
 		cmd.Info = true
 		cmd.InfoMessage = msgGen.Version()
 
-	} else if len(args.copyright) > 0 {
+	} else if params.copyright.Available() {
 		cmd.Info = true
 		cmd.InfoMessage = msgGen.Copyright()
 
 	} else {
-		cmd.background = len(args.background) > 0
-		err = cmd.interpretTitle(args, err)
-		err = cmd.interpretPort(args, err)
-		err = cmd.interpretWorkingDir(args, err)
+		cmd.background = params.background.Available()
+		err = cmd.interpretTitle(params, err)
+		err = cmd.interpretPort(params, err)
+		err = cmd.interpretWorkingDir(params, err)
 	}
 	return err
 }
 
-func (cmd *command) interpretTitle(args *arguments, err error) error {
+func (cmd *command) interpretTitle(params *parameters, err error) error {
 	if err == nil {
-		if len(args.title) > 0 {
-			cmd.title = args.title[0].Value
+		if params.title.Available() {
+			cmd.title = params.title.Values()[0]
 		} else {
 			cmd.title = "URL Search"
 		}
@@ -92,17 +92,17 @@ func (cmd *command) interpretTitle(args *arguments, err error) error {
 	return err
 }
 
-func (cmd *command) interpretPort(args *arguments, err error) error {
+func (cmd *command) interpretPort(params *parameters, err error) error {
 	if err == nil {
-		if len(args.port) > 0 {
+		if params.port.Available() {
 			var port int
-			port, err = strconv.Atoi(args.port[0].Value)
+			port, err = strconv.Atoi(params.port.Values()[0])
 
 			// TODO: port checks
 			if err == nil && port > 0 {
 				cmd.port = strconv.Itoa(port)
 			} else {
-				err = errors.New("bad port number \"" + args.port[0].Value + "\"")
+				err = errors.New("bad port number \"" + params.port.Values()[0] + "\"")
 			}
 		} else {
 			cmd.port = "8080"
@@ -111,9 +111,9 @@ func (cmd *command) interpretPort(args *arguments, err error) error {
 	return err
 }
 
-func (cmd *command) interpretWorkingDir(args *arguments, err error) error {
+func (cmd *command) interpretWorkingDir(params *parameters, err error) error {
 	if err == nil {
-		cmd.workingDir, err = workingDirectory(args)
+		cmd.workingDir, err = workingDirectory(params)
 
 		if err == nil {
 			fileInfo, fileErr := os.Stat(cmd.workingDir)
@@ -140,12 +140,12 @@ func (cmd *command) interpretWorkingDir(args *arguments, err error) error {
 	return err
 }
 
-func workingDirectory(args *arguments) (string, error) {
+func workingDirectory(params *parameters) (string, error) {
 	var path string
 	var err error
 
-	if len(args.workingDir) > 0 {
-		path = args.workingDir[0].Value
+	if params.workingDir.Available() {
+		path = params.workingDir.Values()[0]
 
 	} else {
 		path, err = os.UserHomeDir()

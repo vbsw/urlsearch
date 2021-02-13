@@ -6,7 +6,7 @@
 URL Search is a server to save and search URLs by keywords. URL Search is published on <https://github.com/vbsw/urlsearch>.
 
 ## Copyright
-Copyright 2020, Vitali Baumtrok (vbsw@mailbox.org).
+Copyright 2020, 2021, Vitali Baumtrok (vbsw@mailbox.org).
 
 URL Search is distributed under the Boost Software License, version 1.0. (See accompanying file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
