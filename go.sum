@@ -1,0 +1,4 @@
+github.com/vbsw/bgproc v0.1.0 h1:XmHzP5A3OzHEJx7E4zlHBzSUc34x4hrY7Yv1GOQYjiI=
+github.com/vbsw/bgproc v0.1.0/go.mod h1:VE4PJbPabeklrMqiYyPAIiMnhIO/4Nbw14nLhNJgpT8=
+github.com/vbsw/osargs v0.1.0 h1:oLMeyRx3OQNb5rbg3F6ZLcS8HlxxpSe3AjMT3MXEY9E=
+github.com/vbsw/osargs v0.1.0/go.mod h1:GO4vbS8Am0kK2lNBPOcDqJ9aWULH0Ah9Inw8JShEmlU=
