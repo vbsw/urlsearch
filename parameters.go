@@ -9,33 +9,35 @@ package main
 
 import (
 	"errors"
-	"github.com/vbsw/cmdl"
+	"github.com/vbsw/osargs"
 )
 
 // parameters holds parsed arguments.
 type parameters struct {
-	help       *cmdl.Parameter
-	version    *cmdl.Parameter
-	copyright  *cmdl.Parameter
-	port       *cmdl.Parameter
-	title      *cmdl.Parameter
-	workingDir *cmdl.Parameter
-	background *cmdl.Parameter
+	help       *osargs.Result
+	version    *osargs.Result
+	copyright  *osargs.Result
+	port       *osargs.Result
+	title      *osargs.Result
+	workingDir *osargs.Result
+	background *osargs.Result
 }
 
 func parametersFromArgs(osArgs []string) (*parameters, error) {
 	var err error
-	cl := cmdl.NewFrom(osArgs)
-	asgOp := cmdl.NewAsgOp(true, true, "=")
+	cl := new(osargs.Arguments)
+	cl.Values = osArgs
+	cl.Parsed = make([]bool, len(cl.Values))
+	delimiter := osargs.NewDelimiter(true, true, "=")
 	args := new(parameters)
 
-	args.help = cl.NewParam().Parse("-h", "--help", "-help", "help")
-	args.version = cl.NewParam().Parse("-v", "--version", "-version", "version")
-	args.copyright = cl.NewParam().Parse("--copyright", "-copyright", "copyright")
-	args.port = cl.NewParam().ParsePairs(asgOp, "-p", "--port", "-port", "port")
-	args.title = cl.NewParam().ParsePairs(asgOp, "-t", "--title", "-title", "title")
-	args.workingDir = cl.NewParam().ParsePairs(asgOp, "-d", "--dir", "-dir", "dir")
-	args.background = cl.NewParam().ParsePairs(asgOp, "-b", "--background", "-background", "background")
+	args.help = cl.Parse("-h", "--help", "-help", "help")
+	args.version = cl.Parse("-v", "--version", "-version", "version")
+	args.copyright = cl.Parse("--copyright", "-copyright", "copyright")
+	args.port = cl.ParsePairs(delimiter, "-p", "--port", "-port", "port")
+	args.title = cl.ParsePairs(delimiter, "-t", "--title", "-title", "title")
+	args.workingDir = cl.ParsePairs(delimiter, "-d", "--dir", "-dir", "dir")
+	args.background = cl.ParsePairs(delimiter, "-b", "--background", "-background", "background")
 
 	unparsedArgs := cl.UnparsedArgs()
 
@@ -64,9 +66,9 @@ func (args *parameters) oneParamHasMultipleResults() bool {
 	return args.help.Count() > 1 || args.version.Count() > 1 || args.copyright.Count() > 1 || args.port.Count() > 1 || args.title.Count() > 1 || args.workingDir.Count() > 1 || args.background.Count() > 1
 }
 
-func argsToStringArray(param *cmdl.Parameter) []string {
+func argsToStringArray(param *osargs.Result) []string {
 	strings := make([]string, 0, param.Count())
-	for _, value := range param.Values() {
+	for _, value := range param.Values {
 		if len(value) > 0 {
 			strings = append(strings, value)
 		}

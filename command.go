@@ -84,7 +84,7 @@ func (cmd *command) setValidcommand(params *parameters, msgGen *messageGenerator
 func (cmd *command) interpretTitle(params *parameters, err error) error {
 	if err == nil {
 		if params.title.Available() {
-			cmd.title = params.title.Values()[0]
+			cmd.title = params.title.Values[0]
 		} else {
 			cmd.title = "URL Search"
 		}
@@ -96,13 +96,13 @@ func (cmd *command) interpretPort(params *parameters, err error) error {
 	if err == nil {
 		if params.port.Available() {
 			var port int
-			port, err = strconv.Atoi(params.port.Values()[0])
+			port, err = strconv.Atoi(params.port.Values[0])
 
 			// TODO: port checks
 			if err == nil && port > 0 {
 				cmd.port = strconv.Itoa(port)
 			} else {
-				err = errors.New("bad port number \"" + params.port.Values()[0] + "\"")
+				err = errors.New("bad port number \"" + params.port.Values[0] + "\"")
 			}
 		} else {
 			cmd.port = "8080"
@@ -145,7 +145,7 @@ func workingDirectory(params *parameters) (string, error) {
 	var err error
 
 	if params.workingDir.Available() {
-		path = params.workingDir.Values()[0]
+		path = params.workingDir.Values[0]
 
 	} else {
 		path, err = os.UserHomeDir()
