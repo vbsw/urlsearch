@@ -27,6 +27,10 @@ URL Search is distributed in the hope that it will be useful, but WITHOUT ANY WA
 		-d=S, --dir=S      working directory (S: string)
 		-b, --background   run in background
 
+URL example
+
+	http://localhost:8080
+
 ## References
 
 - https://golang.org/doc/install
