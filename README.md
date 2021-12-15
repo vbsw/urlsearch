@@ -13,6 +13,7 @@ URL Search is distributed under the Boost Software License, version 1.0. (See ac
 URL Search is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the Boost Software License for more details.
 
 ## Usage
+command line
 
 	urlsearch (INFO | {SERVER-PARAM})
 
