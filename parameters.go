@@ -9,7 +9,7 @@ package main
 
 import (
 	"errors"
-	"github.com/vbsw/osargs"
+	"github.com/vbsw/golib/osargs"
 )
 
 // parameters holds parsed arguments.

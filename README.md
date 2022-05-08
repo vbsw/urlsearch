@@ -1,6 +1,6 @@
 # URL Search
 
-[![GoDoc](https://godoc.org/github.com/vbsw/urlsearch?status.svg)](https://godoc.org/github.com/vbsw/urlsearch) [![Go Report Card](https://goreportcard.com/badge/github.com/vbsw/urlsearch)](https://goreportcard.com/report/github.com/vbsw/urlsearch) [![Stability: Experimental](https://masterminds.github.io/stability/experimental.svg)](https://masterminds.github.io/stability/experimental.html)
+[![Go Reference](https://pkg.go.dev/badge/github.com/vbsw/urlsearch.svg)](https://pkg.go.dev/github.com/vbsw/urlsearch) [![Go Report Card](https://goreportcard.com/badge/github.com/vbsw/urlsearch)](https://goreportcard.com/report/github.com/vbsw/urlsearch) [![Stability: Experimental](https://masterminds.github.io/stability/experimental.svg)](https://masterminds.github.io/stability/experimental.html)
 
 ## About
 URL Search is a server to save and search URLs by keywords. URL Search is published on <https://github.com/vbsw/urlsearch>.

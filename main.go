@@ -11,7 +11,7 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/vbsw/bgproc"
+	"github.com/vbsw/golib/bgproc"
 	"os"
 )
 
